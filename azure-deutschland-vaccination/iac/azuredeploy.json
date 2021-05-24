@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploy_namespace":{
+            "type" : "string",
+            "defaultValue" : "deuvac",
+            "metadata": {
+                "description": "The project is meant to get germany vaccination data by states from an API and create reports using it"
+            }
+        },
+        "environment": {
+            "type": "string",
+            "defaultValue" : "dev",
+            "allowedValues" : ["dev","stg","prod"]
+        },
+
+        "location" :{
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location in which the resources will get created"
+            }
+        },
+
+        "datafactory_name": {
+            "type": "string",
+            "defaultValue" : "[concat(parameters('deploy_namespace'),'-adf-',parameters('environment'))]",
+            "metadata": {
+                "description": "Data Factory name"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+     {
+            "apiVersion": "2018-06-01",
+            "name": "[parameters('datafactory_name')]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.DataFactory/factories",
+            "tags": {
+                "resourceName": "Data Factory",
+                "Environment": "[parameters('environment')]"
+
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {}
+        }
+    ],
+    "outputs": {
+        "datafactory_name": {
+            "type": "string",
+            "value": "[parameters('datafactory_name')]"
+        }
+    }
+}
