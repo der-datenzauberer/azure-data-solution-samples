@@ -4,6 +4,9 @@
     "parameters": {
         "environment": {
             "value": "prod"
+        },
+        "administratorLoginPassword": {
+            "value": "prime!23+prod" 
         }
     }
 }
