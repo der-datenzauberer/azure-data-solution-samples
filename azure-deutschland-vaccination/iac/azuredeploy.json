@@ -2,20 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "deploy_namespace":{
-            "type" : "string",
-            "defaultValue" : "deuvac",
+        "deploy_namespace": {
+            "type": "string",
+            "defaultValue": "deuvac",
             "metadata": {
                 "description": "The project is meant to get germany vaccination data by states from an API and create reports using it"
             }
         },
         "environment": {
             "type": "string",
-            "defaultValue" : "dev",
-            "allowedValues" : ["dev","stg","prod"]
+            "defaultValue": "dev",
+            "allowedValues": [ "dev", "stg", "prod" ]
         },
 
-        "location" :{
+        "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
@@ -25,7 +25,7 @@
 
         "datafactory_name": {
             "type": "string",
-            "defaultValue" : "[concat(parameters('deploy_namespace'),'adf',parameters('environment'))]",
+            "defaultValue": "[concat(parameters('deploy_namespace'),'adf',parameters('environment'))]",
             "metadata": {
                 "description": "Data Factory name"
             }
@@ -33,54 +33,54 @@
 
         "storageAccountName": {
             "type": "string",
-            "defaultValue" : "[concat('sta',parameters('deploy_namespace'),parameters('environment'))]",
+            "defaultValue": "[concat('sta',parameters('deploy_namespace'),parameters('environment'))]",
             "metadata": {
                 "description": "Storage Account Name"
             }
         },
 
-    "serverName": {
-      "type": "string",
-      "defaultValue": "[concat(parameters('deploy_namespace'),'sqlsrvr',parameters('environment'))]",
-      "metadata": {
-        "description": "The name of the SQL logical server."
-      }
-    },
-      "sqlDBName" : {
-      "type": "string",
-      "defaultValue": "[concat('sqldb-deuvac','-',parameters('environment'))]",
-      "metadata": {
-        "description": "The name of the SQL Database."
-      }
-    },
+        "serverName": {
+            "type": "string",
+            "defaultValue": "[concat(parameters('deploy_namespace'),'sqlsrvr',parameters('environment'))]",
+            "metadata": {
+                "description": "The name of the SQL logical server."
+            }
+        },
+        "sqlDBName": {
+            "type": "string",
+            "defaultValue": "[concat('sqldb-deuvac','-',parameters('environment'))]",
+            "metadata": {
+                "description": "The name of the SQL Database."
+            }
+        },
 
-    "administratorLogin": {
-      "type": "string",
-      "defaultValue": "sqlAdmin",
-      "metadata": {
-        "description": "The administrator username of the SQL logical server."
-      }
-    },
-    "administratorLoginPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The administrator password of the SQL logical server."
-      }
-    },
+        "administratorLogin": {
+            "type": "string",
+            "defaultValue": "sqlAdmin",
+            "metadata": {
+                "description": "The administrator username of the SQL logical server."
+            }
+        },
+        "administratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The administrator password of the SQL logical server."
+            }
+        },
 
-    "keyVaultName":{
-        "type": "string",
-        "defaultValue": "[concat(parameters('deploy_namespace'),'-kv-',parameters('environment'))]",
-        "metadata": {
-            "description": "Name Of Key Vault"
+        "keyVaultName": {
+            "type": "string",
+            "defaultValue": "[concat(parameters('deploy_namespace'),'-kv-',parameters('environment'))]",
+            "metadata": {
+                "description": "Name Of Key Vault"
+            }
         }
-    }
 
     },
     "functions": [],
     "variables": {},
     "resources": [
-     {
+        {
             "apiVersion": "2018-06-01",
             "name": "[parameters('datafactory_name')]",
             "location": "[parameters('location')]",
@@ -121,58 +121,58 @@
                 "administratorLoginPassword": "[parameters('administratorLoginPassword')]"
             },
             "resources": [
-            {
-                "type": "databases",
-                "apiVersion": "2020-08-01-preview",
-                "name": "[parameters('sqlDBName')]",
-                "location": "[parameters('location')]",
-                "sku": {
-                    "name": "Standard",
-                    "tier": "Standard"
-                },
-                "properties":{},         
-                "dependsOn": [
+                {
+                    "type": "databases",
+                    "apiVersion": "2020-08-01-preview",
+                    "name": "[parameters('sqlDBName')]",
+                    "location": "[parameters('location')]",
+                    "sku": {
+                        "name": "Standard",
+                        "tier": "Standard"
+                    },
+                    "properties": {},
+                    "dependsOn": [
                         "[resourceId('Microsoft.Sql/servers', concat(parameters('serverName')))]"
                     ]
-        }
-        ]
-    },
-
-    {
-        "name": "[parameters('keyVaultName')]",
-        "type": "Microsoft.KeyVault/vaults",
-        "apiVersion": "2016-10-01",
-        "location": "[resourceGroup().location]",
-        "tags": {
-            "displayName": "[parameters('keyVaultName')]"
-        },
-        "properties": {
-            "enabledForDeployment": true,
-            "enabledForTemplateDeployment": true,
-            "enabledForDiskEncryption": true,
-            "tenantId": "[subscription().tenantId]",
-            "accessPolicies": [
-                {
-                    "tenantId": "[subscription().tenantId]",
-                    "objectId": "[reference(parameters('datafactory_name'), '2018-06-01', 'Full').identity.principalId]",
-                    "permissions": {
-                        "keys": [
-                            "Get"
-                        ],
-                        "secrets": [
-                            "List",
-                            "Get",
-                            "Set"
-                        ]
-                    }
                 }
-            ],
-            "sku": {
-                "name": "standard",
-                "family": "A"
+            ]
+        },
+
+        {
+            "name": "[parameters('keyVaultName')]",
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('keyVaultName')]"
+            },
+            "properties": {
+                "enabledForDeployment": true,
+                "enabledForTemplateDeployment": true,
+                "enabledForDiskEncryption": true,
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(parameters('datafactory_name'), '2018-06-01', 'Full').identity.principalId]",
+                        "permissions": {
+                            "keys": [
+                                "Get"
+                            ],
+                            "secrets": [
+                                "List",
+                                "Get",
+                                "Set"
+                            ]
+                        }
+                    }
+                ],
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                }
             }
         }
-    }
 
     ],
 
@@ -197,7 +197,7 @@
             "value": "[parameters('sqlDBName')]"
         },
 
-        "keyvault_name":{
+        "keyvault_name": {
             "type": "string",
             "value": "[parameters('keyVaultName')]"
         }
